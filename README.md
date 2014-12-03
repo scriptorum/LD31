@@ -2,11 +2,12 @@
 
 Base code for Ludum Dare compo #31.  
 
-##Libraries used
+##Credits
 * [Flaxen](https://github.com/Scriptorum/Flaxen)
-* [HaxePunk](https://github.com/HaxePunk/HaxePunk) 
+* [HaxePunk](https://github.com/HaxePunk/HaxePunk)
 * [Ash-Haxe](https://github.com/nadako/Ash-HaXe)
 * [OpenFL](http://www.openfl.org/)
+* Accidental Presidency font from [Tepid Monkey](http://www.tepidmonkey.net)
 
 ##The MIT License (MIT)
 
