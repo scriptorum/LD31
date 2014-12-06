@@ -19,6 +19,7 @@ class PlayHandler extends FlaxenHandler
 	
 	public var f:Flaxen;
 	public var newBeingSpeed:Int = Config.START_BEING_SPEED; 
+	public var currentScreen:Int = 0;
 
 	public function new(f:Flaxen)
 	{
@@ -42,39 +43,26 @@ class PlayHandler extends FlaxenHandler
 		var screenImage = new Image("art/screen.png");
 		var screenLayer = new Layer(100);
 
-		f.newSingleton("screen1")
-			.add(screenImage)
-			.add(posScreen[0])
-			.add(screenLayer);
-		f.newSingleton("screen2")
-			.add(screenImage)
-			.add(posScreen[1])
-			.add(screenLayer);
-		f.newSingleton("screen3")
-			.add(screenImage)
-			.add(posScreen[2])
-			.add(screenLayer);
+		for(i in 0...3)
+			f.newSingleton("screen" + i)
+				.add(screenImage)
+				.add(posScreen[i])
+				.add(screenLayer);
 
 		var coverLayer = new Layer(10);
 		var coverImage = new Image("art/screen-inactive.png");
 		var coverAlpha = new Alpha(.35);
 
-		f.newSingleton("screen1-cover")
-			.add(coverImage)
-			.add(posScreen[0])
-			.add(coverLayer)
-			.add(coverAlpha)
-			.add(Invisible.instance);
-		f.newSingleton("screen2-cover")
-			.add(coverImage)
-			.add(posScreen[1])
-			.add(coverLayer)
-			.add(coverAlpha);
-		f.newSingleton("screen3-cover")
-			.add(coverImage)
-			.add(posScreen[2])
-			.add(coverLayer)
-			.add(coverAlpha);
+		for(i in 0...3)
+		{
+			var e = f.newSingleton("screen" + i + "cover")
+				.add(coverImage)
+				.add(posScreen[i])
+				.add(coverLayer)
+				.add(coverAlpha);
+			if(i == currentScreen)
+				e.add(Invisible.instance);
+		}
 
 		addPlayer();
 
@@ -161,7 +149,7 @@ class PlayHandler extends FlaxenHandler
 			default: -1;
 		};		
 		if(screen >= 0)
-			changeScreen(screen);
+			switchScreen(screen);
 
 		checkPlayerMovement();
 
@@ -187,8 +175,17 @@ class PlayHandler extends FlaxenHandler
 		else velocity.y = 0;
 	}
 
-	public function changeScreen(screen:Int)
+	public function switchScreen(screen:Int)
 	{
-		//
+		if(screen == currentScreen)
+			return;
+
+		var e = f.demandEntity("screen" + currentScreen + "cover");
+		e.remove(Invisible);
+
+		e = f.demandEntity("screen" + screen + "cover");
+		e.add(Invisible.instance);
+
+		currentScreen = screen;		
 	}
 }
