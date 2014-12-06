@@ -2,6 +2,12 @@
 
 Base code for Ludum Dare compo #31.  
 
+##Theme
+Entire Game On One Screen
+
+##Overview
+Not a fan of the theme. I reject the mechanical interpretation, and instead tack on a few words to arrive at a different and more maleable theme: "Entire game on screen AT ONE TIME." The game will have multiple screens each mirroring the other with slight differences, but only one of the screens is active. Switch to a different screen when the going gets tough, but know that each screen has different entities and different dangers.
+
 ##Credits
 * [Flaxen](https://github.com/Scriptorum/Flaxen)
 * [HaxePunk](https://github.com/HaxePunk/HaxePunk)
