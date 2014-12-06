@@ -18,7 +18,7 @@ class PlayHandler extends FlaxenHandler
 	private var offTile:Offset;
 	
 	public var f:Flaxen;
-	public var newBeingSpeed:Int = 80; // 40 px/sec
+	public var newBeingSpeed:Int = Config.START_BEING_SPEED; 
 
 	public function new(f:Flaxen)
 	{
@@ -57,7 +57,7 @@ class PlayHandler extends FlaxenHandler
 
 		var coverLayer = new Layer(10);
 		var coverImage = new Image("art/screen-inactive.png");
-		var coverAlpha = new Alpha(0.2);
+		var coverAlpha = new Alpha(.35);
 
 		f.newSingleton("screen1-cover")
 			.add(coverImage)
@@ -76,16 +76,36 @@ class PlayHandler extends FlaxenHandler
 			.add(coverLayer)
 			.add(coverAlpha);
 
-		addBeing();
-		addBeing();
-		addBeing();
+		addPlayer();
 
-		var masterPos = f.demandComponent("master0", Position);
-		trace(masterPos);
+		for(i in 0...10)
+			addBeing();
 
-		f.addSystem(new flaxen.system.MovementSystem(f));
 		f.addSystem(new game.system.BounceSystem(f));
 		f.addSystem(new game.system.SlaveSystem(f));
+		f.addSystem(new flaxen.system.MovementSystem(f));
+	}
+
+	public function addPlayer()
+	{
+		f.newSingleton("player") // master player control
+			.add(new Position(Config.SCREEN_W / 2, Config.SCREEN_H / 2))
+			.add(new Velocity(0,0))
+			.add(Master.instance);
+
+		for(screen in 0...3)
+		{
+			var pos = posScreen[screen];
+			var slaveEnt:Entity = f.newEntity("scr" + screen + "player")
+				.add(imgTiles)
+				.add(gsTiles)
+				.add(layerBeing)
+				.add(new Tile(screen + 3))
+				.add(new Position(Config.SCREEN_W / 2, Config.SCREEN_H / 2))
+				.add(new Velocity(0,0))
+				.add(new Slave("player", pos))
+				.add(offTile);
+		}
 	}
 
 	public function addBeing()
@@ -123,7 +143,7 @@ class PlayHandler extends FlaxenHandler
 		#if (debug)
 		if(key == Key.D)
 		{
-			#if (windows || mac || linux))
+			#if (windows || mac || linux)
 				trace("Dumping log(s)");
 				var path =  sys.FileSystem.fullPath ("../../../../../../../");
 				flaxen.util.LogUtil.dumpLog(f, path + "/entities.txt");
@@ -133,6 +153,42 @@ class PlayHandler extends FlaxenHandler
 		}
 		#end
 
+		var screen = switch(key)
+		{
+			case Key.DIGIT_1: 0;
+			case Key.DIGIT_2: 1;
+			case Key.DIGIT_3: 2;
+			default: -1;
+		};		
+		if(screen >= 0)
+			changeScreen(screen);
+
+		checkPlayerMovement();
+
 		InputService.clearLastKey();
+	}
+
+	public function checkPlayerMovement()
+	{
+		var velocity:Velocity = f.getComponent("player", Velocity);
+		if(velocity == null)
+			return;
+
+		if(InputService.check(Key.LEFT))
+			velocity.x = -Config.PLAYER_SPEED;
+		else if(InputService.check(Key.RIGHT))
+			velocity.x = Config.PLAYER_SPEED;
+		else velocity.x = 0;
+
+		if(InputService.check(Key.UP))
+			velocity.y = -Config.PLAYER_SPEED;
+		else if(InputService.check(Key.DOWN))
+			velocity.y = Config.PLAYER_SPEED;
+		else velocity.y = 0;
+	}
+
+	public function changeScreen(screen:Int)
+	{
+		//
 	}
 }
