@@ -49,4 +49,15 @@ class Being
 			case Scissors:2;
 		}
 	}
+
+	public static function intToType(i:Int): BeingType
+	{
+		return switch(i)
+		{
+			case 0:Rock;
+			case 1:Paper;
+			case 2:Scissors;
+			default:null;
+		}
+	}
 }

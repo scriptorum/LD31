@@ -16,10 +16,9 @@ class PlayHandler extends FlaxenHandler
 	private var layerBeing:Layer;
 	private var posScreen:Array<Position>;
 	private var offTile:Offset;
+	private var arrScreen:Array<Screen>;
 	
 	public var f:Flaxen;
-	public var newBeingSpeed:Int = Config.START_BEING_SPEED; 
-	public var currentScreen:Int = 0;
 
 	public function new(f:Flaxen)
 	{
@@ -36,7 +35,8 @@ class PlayHandler extends FlaxenHandler
 
 		imgTiles = new Image("art/tiles.png");
 		gsTiles = new ImageGrid(Config.TILE_W, Config.TILE_H);
-		posScreen = [new Position(50, 60), new Position(50, 340), new Position(330,340) ];
+		posScreen = [new Position(50, 60), new Position(50, 340), new Position(330,340)];
+		arrScreen = [new Screen(0), new Screen(1), new Screen(2)];
 		layerBeing = new Layer(50);
 		offTile = new Offset(-Config.TILE_W / 2, -Config.TILE_H / 2);
 
@@ -60,18 +60,19 @@ class PlayHandler extends FlaxenHandler
 				.add(posScreen[i])
 				.add(coverLayer)
 				.add(coverAlpha);
-			if(i == currentScreen)
+			if(i == Config.currentScreen)
 				e.add(Invisible.instance);
 		}
 
 		addPlayer();
 
-		for(i in 0...10)
+		for(i in 0...Config.INIT_BEINGS)
 			addBeing();
 
 		f.addSystem(new game.system.BounceSystem(f));
 		f.addSystem(new game.system.SlaveSystem(f));
 		f.addSystem(new flaxen.system.MovementSystem(f));
+		f.addSystem(new game.system.CollisionSystem(f));
 	}
 
 	public function addPlayer()
@@ -84,7 +85,7 @@ class PlayHandler extends FlaxenHandler
 		for(screen in 0...3)
 		{
 			var pos = posScreen[screen];
-			var slaveEnt:Entity = f.newEntity("scr" + screen + "player")
+			var slaveEnt:Entity = f.newSingleton("scr" + screen + "player")
 				.add(imgTiles)
 				.add(gsTiles)
 				.add(layerBeing)
@@ -92,6 +93,7 @@ class PlayHandler extends FlaxenHandler
 				.add(new Position(Config.SCREEN_W / 2, Config.SCREEN_H / 2))
 				.add(new Velocity(0,0))
 				.add(new Slave("player", pos))
+				.add(arrScreen[screen])
 				.add(offTile);
 		}
 	}
@@ -102,7 +104,7 @@ class PlayHandler extends FlaxenHandler
 
 		// Spawn master
 		var masterPos = new Position(Config.SCREEN_W * Math.random(), Config.SCREEN_H * Math.random());
-		var masterPt = openfl.geom.Point.polar(newBeingSpeed, Math.PI * Math.random());
+		var masterPt = openfl.geom.Point.polar(Config.newBeingSpeed, Math.PI * Math.random());
 		var masterEnt:Entity = f.newEntity("master")
 			.add(masterPos)
 			.add(new Velocity(masterPt.x, masterPt.y))
@@ -120,7 +122,10 @@ class PlayHandler extends FlaxenHandler
 				.add(gsTiles)
 				.add(new Tile(being.toInt()))
 				.add(offTile)
+				.add(arrScreen[screen])
 				.add(layerBeing);
+			if(screen == Config.currentScreen)
+				slaveEnt.add(PlayerCollider.instance);
 		}
 	}
 
@@ -177,15 +182,23 @@ class PlayHandler extends FlaxenHandler
 
 	public function switchScreen(screen:Int)
 	{
-		if(screen == currentScreen)
+		if(screen == Config.currentScreen)
 			return;
 
-		var e = f.demandEntity("screen" + currentScreen + "cover");
+		// Hide screen cover on new active screen, and show cover on old screen
+		var e = f.demandEntity("screen" + Config.currentScreen + "cover");
 		e.remove(Invisible);
-
 		e = f.demandEntity("screen" + screen + "cover");
 		e.add(Invisible.instance);
 
-		currentScreen = screen;		
+		// Remove all player colliders from old screen slaves and add them to new screen slaves
+		for(node in f.ash.getNodeList(game.node.BeingSlaveNode))
+			if(node.screen.value == Config.currentScreen)
+				node.entity.remove(PlayerCollider);
+			else if(node.screen.value == screen)
+				node.entity.add(PlayerCollider.instance);
+
+		// Switch is complete
+		Config.currentScreen = screen;		
 	}
 }

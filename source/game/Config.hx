@@ -10,7 +10,11 @@ class Config
 	public static var BOUNCE_MIN_Y:Float = TILE_H / 2;
 	public static var BOUNCE_MAX_X:Float = SCREEN_W - TILE_W / 2;
 	public static var BOUNCE_MAX_Y:Float = SCREEN_H - TILE_H / 2;
-
 	public static var START_BEING_SPEED:Int = 60;
 	public static var PLAYER_SPEED:Int = 80;
+	public static var HITBOX:Int = 10;
+	public static var INIT_BEINGS:Int = 3;
+
+	public static var newBeingSpeed:Int = Config.START_BEING_SPEED; 
+	public static var currentScreen:Int = 0;
 }
