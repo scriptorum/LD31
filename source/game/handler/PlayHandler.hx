@@ -89,11 +89,13 @@ class PlayHandler extends FlaxenHandler
 		f.addSystem(new flaxen.system.MovementSystem(f));
 		f.addSystem(new game.system.CollisionSystem(f));
 		f.addSystem(new game.system.TextUpdatingSystem(f));
+		f.addSystem(new game.system.StunSystem(f));
 	}
 
 	override public function update(_)
 	{
 		var key = InputService.lastKey();
+		InputService.clearLastKey();
 
 		#if (debug)
 		if(key == Key.D)
@@ -108,6 +110,9 @@ class PlayHandler extends FlaxenHandler
 		}
 		#end
 
+		if(f.hasComponent("player", Stunned))
+			return;
+
 		var screen = switch(key)
 		{
 			case Key.DIGIT_1: 0;
@@ -120,7 +125,6 @@ class PlayHandler extends FlaxenHandler
 
 		checkPlayerMovement();
 
-		InputService.clearLastKey();
 	}
 
 	public function checkPlayerMovement()

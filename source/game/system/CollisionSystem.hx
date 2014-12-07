@@ -4,11 +4,12 @@
 package game.system;
 
 import ash.core.Entity;
-import flaxen.component.Position;
 import flaxen.component.Image;
 import flaxen.component.Layer;
+import flaxen.component.Position;
 import flaxen.component.Text;
 import flaxen.component.Updated;
+import flaxen.component.Velocity;
 import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
 import flaxen.core.Log;
@@ -16,6 +17,7 @@ import flaxen.util.MathUtil;
 import game.component.Being;
 import game.component.Counter;
 import game.component.Spawn;
+import game.component.Stunned;
 import game.node.ColliderNode;
 import game.type.BeingType;
 import game.type.SpawnType;
@@ -52,9 +54,13 @@ class CollisionSystem extends FlaxenSystem
  		}
 	}
 
+	// TODO Add a stunned, shake effect
+	// TODO? All stunned objects (or just one encountered) are stunned as well, perhaps for even longer than the player is stunned
 	public function playerStunned()
 	{
-		trace("Player is stunned");
+		var playerEnt = f.demandEntity("player");
+		playerEnt.add(new Stunned(Config.STUN_DURATION));
+		playerEnt.get(Velocity).set(0,0);
 	}
 
 	// TODO Add some explosion or devour animation
