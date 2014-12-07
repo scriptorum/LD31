@@ -5,11 +5,13 @@ package game.system;
 
 import ash.core.Entity;
 import flaxen.component.Position;
+import flaxen.component.Updated;
 import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
 import flaxen.core.Log;
 import flaxen.util.MathUtil;
 import game.component.Being;
+import game.component.Counter;
 import game.component.Spawn;
 import game.node.ColliderNode;
 import game.type.BeingType;
@@ -51,8 +53,11 @@ class CollisionSystem extends FlaxenSystem
 
 	public function playerDevours(master:Entity)
 	{
-		// Find entity holding score
-		// Increment score counter
+		// Find entity holding score && increment score counter
+		var scoreEnt = f.demandEntity("score");
+		scoreEnt.get(Counter).value++;
+		scoreEnt.add(Updated.instance);
+
 		// Add TextUpdaterSystem
 		// Find all children of this entity
 		// Mark all three children of this entity as dying, removing Being and Slave, removing master

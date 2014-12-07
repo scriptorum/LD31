@@ -9,6 +9,8 @@ import flaxen.core.Log;
 import flaxen.service.InputService;
 import game.component.*;
 import game.component.Spawn;
+import flaxen.common.TextAlign;
+import flaxen.component.Text;
 
 class PlayHandler extends FlaxenHandler
 {	
@@ -32,7 +34,7 @@ class PlayHandler extends FlaxenHandler
 		f.newSingleton("frame-overlay")
 			.add(new Image("art/overlay.png"))
 			.add(Position.zero())
-			.add(new Layer(0));
+			.add(new Layer(10));
 
 		Config.posScreen = [new Position(50, 60), new Position(50, 340), new Position(330,340)];
 		var screenImage = new Image("art/screen.png");
@@ -58,6 +60,19 @@ class PlayHandler extends FlaxenHandler
 			if(i == Config.currentScreen)
 				e.add(Invisible.instance);
 		}
+
+		addCounter();
+	}
+
+	public function addCounter()
+	{
+		f.newSingleton("score")
+			.add(new Image("art/font1.png"))
+			.add(Position.topRight().add(0,5))
+			.add(new Layer(5))
+			.add(new Text("9876543210,"))
+			.add(new Counter(0))
+			.add(TextStyle.createBitmap(false, Right, Top, 0, -2, 0, "2", false, "0123456789,"));
 	}
 
 	public function spawnPlayer()
@@ -73,6 +88,7 @@ class PlayHandler extends FlaxenHandler
 		f.addSystem(new game.system.SlaveSystem(f));
 		f.addSystem(new flaxen.system.MovementSystem(f));
 		f.addSystem(new game.system.CollisionSystem(f));
+		f.addSystem(new game.system.TextUpdatingSystem(f));
 	}
 
 	override public function update(_)
