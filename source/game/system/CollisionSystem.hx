@@ -10,6 +10,7 @@ import flaxen.core.FlaxenSystem;
 import game.node.ColliderNode;
 import flaxen.util.MathUtil;
 import flaxen.core.Log;
+import ash.core.Entity;
 
 class CollisionSystem extends FlaxenSystem
 {
@@ -31,7 +32,7 @@ class CollisionSystem extends FlaxenSystem
 				if(playerBeing == node.being.type)
 					playerStunned();
 				else if(playerBeing == node.being.getPredator())
-					playerDevours();
+					playerDevours(f.demandEntity(node.slave.master));
 				else if(playerBeing == node.being.getPrey())
 					playerDevoured();
 				else Log.log("Unknown relationship between player " + playerBeing + 
@@ -45,9 +46,21 @@ class CollisionSystem extends FlaxenSystem
 		trace("Player is stunned");
 	}
 
-	public function playerDevours()
+	public function playerDevours(master:Entity)
 	{
-		trace("Player devours a being");
+		// Find entity holding score
+		// Increment score counter
+		// Add TextUpdaterSystem
+		// Find all children of this entity
+		// Mark all three children of this entity as dying, removing Being and Slave, removing master
+		// Change animation of three children to explode
+
+		// At end of explosion, remove or fade out remaining entity, removing it completely
+
+		// This should kill the master entity and its children
+		ash.removeEntity(master); 
+
+		// After fixed delay, spawn two new master beings
 	}
 
 	public function playerDevoured()

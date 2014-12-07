@@ -1,5 +1,6 @@
 package game.handler; 
 
+import ash.core.Entity;
 import com.haxepunk.utils.Key;
 import flaxen.component.*;
 import flaxen.core.Flaxen;
@@ -7,7 +8,7 @@ import flaxen.core.FlaxenHandler;
 import flaxen.core.Log;
 import flaxen.service.InputService;
 import game.component.*;
-import ash.core.Entity;
+import game.service.*;
 
 class PlayHandler extends FlaxenHandler
 {	
@@ -77,15 +78,17 @@ class PlayHandler extends FlaxenHandler
 
 	public function addPlayer()
 	{
-		f.newSingleton("player") // master player control
+		// Spawn player
+		var playerEnt = f.newSingleton("player") // master player control
 			.add(new Position(Config.SCREEN_W / 2, Config.SCREEN_H / 2))
 			.add(new Velocity(0,0))
 			.add(Master.instance);
 
+		// Spawn slave players
 		for(screen in 0...3)
 		{
 			var pos = posScreen[screen];
-			var slaveEnt:Entity = f.newSingleton("scr" + screen + "player")
+			var slaveEnt:Entity = f.newChildSingleton(playerEnt, "scr" + screen + "player")
 				.add(imgTiles)
 				.add(gsTiles)
 				.add(layerBeing)
@@ -100,9 +103,13 @@ class PlayHandler extends FlaxenHandler
 
 	public function addBeing()
 	{
-		var beings = [Being.random(), Being.random(), Being.random()];
+		// Randomize beings, but ensure at least one being is prey for the screen
+		// This will ensure the game is solvable (beatable is another matter)
+		var beings:Array<Being> = [Being.random(), Being.random(), Being.random()];
+		var b = Being.random();
+		beings[Being.typeToInt(b.getPredator())] = b;
 
-		// Spawn master
+		// Spawn master being
 		var masterPos = new Position(Config.SCREEN_W * Math.random(), Config.SCREEN_H * Math.random());
 		var masterPt = openfl.geom.Point.polar(Config.newBeingSpeed, Math.PI * Math.random());
 		var masterEnt:Entity = f.newEntity("master")
@@ -110,11 +117,12 @@ class PlayHandler extends FlaxenHandler
 			.add(new Velocity(masterPt.x, masterPt.y))
 			.add(Master.instance);
 
+		// Spawn slave beings
 		for(screen in 0...3)
 		{
 			var pos = posScreen[screen];
 			var being = beings[screen];
-			var slaveEnt:Entity = f.newEntity("scr" + screen + "slave")
+			var slaveEnt:Entity = f.newChildEntity(masterEnt, "scr" + screen + "slave")
 				.add(new Position(masterPos.x + pos.x, masterPos.y + pos.y))
 				.add(new Slave(masterEnt.name, pos))
 				.add(imgTiles)

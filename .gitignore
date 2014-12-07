@@ -3,4 +3,5 @@ export
 .DS_Store
 *.bak
 nohup.out
+entities.txt
 

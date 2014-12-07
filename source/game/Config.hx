@@ -2,6 +2,7 @@ package game;
 
 class Config
 {
+	// Shared Constants
 	public static var SCREEN_W:Int = 220;
 	public static var SCREEN_H:Int = 220;
 	public static var TILE_W:Int = 16;
@@ -13,8 +14,9 @@ class Config
 	public static var START_BEING_SPEED:Int = 60;
 	public static var PLAYER_SPEED:Int = 80;
 	public static var HITBOX:Int = 10;
-	public static var INIT_BEINGS:Int = 3;
+	public static var INIT_BEINGS:Int = 10;
 
+	// Shared Data 
 	public static var newBeingSpeed:Int = Config.START_BEING_SPEED; 
 	public static var currentScreen:Int = 0;
 }
