@@ -2,15 +2,17 @@ package game.handler;
 
 import ash.core.Entity;
 import com.haxepunk.utils.Key;
+import flaxen.common.LoopType;
+import flaxen.common.TextAlign;
 import flaxen.component.*;
+import flaxen.component.Text;
 import flaxen.core.Flaxen;
 import flaxen.core.FlaxenHandler;
 import flaxen.core.Log;
 import flaxen.service.InputService;
 import game.component.*;
 import game.component.Spawn;
-import flaxen.common.TextAlign;
-import flaxen.component.Text;
+import openfl.geom.Rectangle;
 
 class PlayHandler extends FlaxenHandler
 {	
@@ -47,16 +49,19 @@ class PlayHandler extends FlaxenHandler
 				.add(screenLayer);
 
 		var coverLayer = new Layer(10);
-		var coverImage = new Image("art/screen-inactive.png");
-		var coverAlpha = new Alpha(.35);
+		var coverAlpha = new Alpha(.4);
 
 		for(i in 0...3)
 		{
+			var clip = new Rectangle(0, 0, Config.SCREEN_W, Config.SCREEN_H);
+			var img = new Image("art/screen-inactive.png", clip);
 			var e = f.newSingleton("screen" + i + "cover")
-				.add(coverImage)
 				.add(Config.posScreen[i])
 				.add(coverLayer)
-				.add(coverAlpha);
+				.add(img)
+				.add(coverAlpha)
+				.add(new Tween(clip, { y:Config.SCREEN_H }, 0.3 + i * 0.2, null, LoopType.Forward));
+
 			if(i == Config.currentScreen)
 				e.add(Invisible.instance);
 		}
