@@ -1,6 +1,6 @@
 package game.component;
 
-enum BeingType { Rock; Paper; Scissors; }
+import game.type.BeingType;
 
 class Being
 {
@@ -29,6 +29,7 @@ class Being
 	public function toInt(): Int
 	{
 		return typeToInt(type);
+
 	}
 
 	/**** STATIC ****/

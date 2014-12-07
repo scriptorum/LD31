@@ -14,9 +14,11 @@ class Config
 	public static var START_BEING_SPEED:Int = 60;
 	public static var PLAYER_SPEED:Int = 80;
 	public static var HITBOX:Int = 10;
-	public static var INIT_BEINGS:Int = 10;
+	public static var INIT_BEINGS:Int = 1;
+	public static var SPAWN_DELAY:Float = 0.25; // sec TODO scale spawn delay by number of spawns queued at once
 
 	// Shared Data 
 	public static var newBeingSpeed:Int = Config.START_BEING_SPEED; 
 	public static var currentScreen:Int = 0;
+	public static var posScreen:Array<flaxen.component.Position>;
 }

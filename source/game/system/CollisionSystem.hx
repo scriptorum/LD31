@@ -3,14 +3,17 @@
 */
 package game.system;
 
-import game.component.Being;
+import ash.core.Entity;
 import flaxen.component.Position;
 import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
-import game.node.ColliderNode;
-import flaxen.util.MathUtil;
 import flaxen.core.Log;
-import ash.core.Entity;
+import flaxen.util.MathUtil;
+import game.component.Being;
+import game.component.Spawn;
+import game.node.ColliderNode;
+import game.type.BeingType;
+import game.type.SpawnType;
 
 class CollisionSystem extends FlaxenSystem
 {
@@ -28,14 +31,14 @@ class CollisionSystem extends FlaxenSystem
 				MathUtil.diff(node.position.y, playerPos.y) < Config.HITBOX)
 			{
 				// Collision occurred!
-				var playerBeing = Being.intToType(Config.currentScreen);
-				if(playerBeing == node.being.type)
+				var playerBT:BeingType = Being.intToType(Config.currentScreen);
+				if(playerBT == node.being.type)
 					playerStunned();
-				else if(playerBeing == node.being.getPredator())
+				else if(playerBT == node.being.getPredator())
 					playerDevours(f.demandEntity(node.slave.master));
-				else if(playerBeing == node.being.getPrey())
+				else if(playerBT == node.being.getPrey())
 					playerDevoured();
-				else Log.log("Unknown relationship between player " + playerBeing + 
+				else Log.log("Unknown relationship between player " + playerBT + 
 					" and being " + node.being.type);
 			}
  		}
@@ -61,6 +64,12 @@ class CollisionSystem extends FlaxenSystem
 		ash.removeEntity(master); 
 
 		// After fixed delay, spawn two new master beings
+		for(i in 0...2)
+		{
+			trace("Adding spawner, i=" + i);
+			f.newEntity("spawn")
+				.add(new Spawn(Config.SPAWN_DELAY, SpawnBeing));			
+		}
 	}
 
 	public function playerDevoured()

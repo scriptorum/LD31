@@ -8,17 +8,10 @@ import flaxen.core.FlaxenHandler;
 import flaxen.core.Log;
 import flaxen.service.InputService;
 import game.component.*;
-import game.service.*;
+import game.component.Spawn;
 
 class PlayHandler extends FlaxenHandler
 {	
-	private var imgTiles:Image;
-	private var gsTiles:ImageGrid;
-	private var layerBeing:Layer;
-	private var posScreen:Array<Position>;
-	private var offTile:Offset;
-	private var arrScreen:Array<Screen>;
-	
 	public var f:Flaxen;
 
 	public function new(f:Flaxen)
@@ -29,25 +22,26 @@ class PlayHandler extends FlaxenHandler
 
 	override public function start(_)
 	{
+		initSystems();
+		initUI();
+		spawnPlayer();
+	}
+
+	public function initUI()
+	{
 		f.newSingleton("frame-overlay")
 			.add(new Image("art/overlay.png"))
 			.add(Position.zero())
 			.add(new Layer(0));
 
-		imgTiles = new Image("art/tiles.png");
-		gsTiles = new ImageGrid(Config.TILE_W, Config.TILE_H);
-		posScreen = [new Position(50, 60), new Position(50, 340), new Position(330,340)];
-		arrScreen = [new Screen(0), new Screen(1), new Screen(2)];
-		layerBeing = new Layer(50);
-		offTile = new Offset(-Config.TILE_W / 2, -Config.TILE_H / 2);
-
+		Config.posScreen = [new Position(50, 60), new Position(50, 340), new Position(330,340)];
 		var screenImage = new Image("art/screen.png");
 		var screenLayer = new Layer(100);
 
 		for(i in 0...3)
 			f.newSingleton("screen" + i)
 				.add(screenImage)
-				.add(posScreen[i])
+				.add(Config.posScreen[i])
 				.add(screenLayer);
 
 		var coverLayer = new Layer(10);
@@ -58,83 +52,27 @@ class PlayHandler extends FlaxenHandler
 		{
 			var e = f.newSingleton("screen" + i + "cover")
 				.add(coverImage)
-				.add(posScreen[i])
+				.add(Config.posScreen[i])
 				.add(coverLayer)
 				.add(coverAlpha);
 			if(i == Config.currentScreen)
 				e.add(Invisible.instance);
 		}
+	}
 
-		addPlayer();
+	public function spawnPlayer()
+	{
+		f.newEntity("spawn")
+			.add(new Spawn(0, SpawnPlayer));
+	}
 
-		for(i in 0...Config.INIT_BEINGS)
-			addBeing();
-
+	public function initSystems()
+	{
+		f.addSystem(new game.system.SpawnSystem(f));
 		f.addSystem(new game.system.BounceSystem(f));
 		f.addSystem(new game.system.SlaveSystem(f));
 		f.addSystem(new flaxen.system.MovementSystem(f));
 		f.addSystem(new game.system.CollisionSystem(f));
-	}
-
-	public function addPlayer()
-	{
-		// Spawn player
-		var playerEnt = f.newSingleton("player") // master player control
-			.add(new Position(Config.SCREEN_W / 2, Config.SCREEN_H / 2))
-			.add(new Velocity(0,0))
-			.add(Master.instance);
-
-		// Spawn slave players
-		for(screen in 0...3)
-		{
-			var pos = posScreen[screen];
-			var slaveEnt:Entity = f.newChildSingleton(playerEnt, "scr" + screen + "player")
-				.add(imgTiles)
-				.add(gsTiles)
-				.add(layerBeing)
-				.add(new Tile(screen + 3))
-				.add(new Position(Config.SCREEN_W / 2, Config.SCREEN_H / 2))
-				.add(new Velocity(0,0))
-				.add(new Slave("player", pos))
-				.add(arrScreen[screen])
-				.add(offTile);
-		}
-	}
-
-	public function addBeing()
-	{
-		// Randomize beings, but ensure at least one being is prey for the screen
-		// This will ensure the game is solvable (beatable is another matter)
-		var beings:Array<Being> = [Being.random(), Being.random(), Being.random()];
-		var b = Being.random();
-		beings[Being.typeToInt(b.getPredator())] = b;
-
-		// Spawn master being
-		var masterPos = new Position(Config.SCREEN_W * Math.random(), Config.SCREEN_H * Math.random());
-		var masterPt = openfl.geom.Point.polar(Config.newBeingSpeed, Math.PI * Math.random());
-		var masterEnt:Entity = f.newEntity("master")
-			.add(masterPos)
-			.add(new Velocity(masterPt.x, masterPt.y))
-			.add(Master.instance);
-
-		// Spawn slave beings
-		for(screen in 0...3)
-		{
-			var pos = posScreen[screen];
-			var being = beings[screen];
-			var slaveEnt:Entity = f.newChildEntity(masterEnt, "scr" + screen + "slave")
-				.add(new Position(masterPos.x + pos.x, masterPos.y + pos.y))
-				.add(new Slave(masterEnt.name, pos))
-				.add(imgTiles)
-				.add(being)
-				.add(gsTiles)
-				.add(new Tile(being.toInt()))
-				.add(offTile)
-				.add(arrScreen[screen])
-				.add(layerBeing);
-			if(screen == Config.currentScreen)
-				slaveEnt.add(PlayerCollider.instance);
-		}
 	}
 
 	override public function update(_)
