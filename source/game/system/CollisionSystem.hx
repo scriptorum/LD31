@@ -10,6 +10,7 @@ import flaxen.component.Position;
 import flaxen.component.Text;
 import flaxen.component.Updated;
 import flaxen.component.Velocity;
+import flaxen.component.Rotation;
 import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
 import flaxen.core.Log;
@@ -84,17 +85,18 @@ class CollisionSystem extends FlaxenSystem
 	// TODO Move font2 into compomnent set, eliminate font1
 	public function playerDevoured()
 	{
-		var msgEnt = f.newSingleton("youdied")
-			.add(new Image("art/font2.png"))
-			.add(Position.center())
-			.add(new Layer(5))
-			.add(new Text("YOU DIED!"))
-			.add(TextStyle.createBitmap(false, Center, Center, 0, -2, 0, "M", false, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ,.!"));
+		Config.mode = "dead";		
 		f.removeEntity("player");
+
+		var t1 = f.newTween(f.getComponent("deathsign", Position), { x:143, y:340 }, Config.UI_SPEED);
+		var t2 = f.newTween(f.getComponent("deathsign", Rotation), { angle:0 }, Config.UI_SPEED);
+		t1.destroyEntity = false;
+		t2.destroyEntity = false;
 		f.newActionQueue()
-			.delay(3)
-			.addCallback(function(){ f.resetSingleton("BoxOfBeing"); })
-			.addEntity(ash, f.newEntity("spawn", false).add(new Spawn(0, SpawnPlayer)))
-			.removeEntity(ash, msgEnt);
+			.waitForProperty(t2, "complete", true)
+			.removeEntityByName(f.ash, t1.name)
+			.removeEntityByName(f.ash, t2.name)
+			.delay(1.5)
+			.addCallback(function() { Config.offerStart(f); });
 	}
 }

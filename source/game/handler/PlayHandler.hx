@@ -25,14 +25,14 @@ class PlayHandler extends FlaxenHandler
 	}
 
 	override public function start(_)
-	{
+	{		
 		initSystems();
 		initUI();
-		spawnPlayer();
 	}
 
 	public function initUI()
 	{
+
 		f.newSingleton("frame-overlay")
 			.add(new Image("art/overlay.png"))
 			.add(Position.zero())
@@ -66,18 +66,77 @@ class PlayHandler extends FlaxenHandler
 				e.add(Invisible.instance);
 		}
 
+		// art	TITLE		GAME 		LOGO
+		// FMan 46,196		10,20
+		// Fire 84,441		243,20
+		// SM 	328,441		380,20
+		// V1 	110,318		183,20
+		// V2 	258, 441	330,20
+
+
+		f.newSingleton("title-fireman")
+			.add(new Image("art/title-fireman.png"))
+			.add(new Position(10,20))
+			.add(new Layer(4));
+
+		f.newSingleton("title-fire")
+			.add(new Image("art/title-fire.png"))
+			.add(new Position(243,20))
+			.add(new Layer(4));
+
+		f.newSingleton("title-snowman")
+			.add(new Image("art/title-snowman.png"))
+			.add(new Position(380,20))
+			.add(new Layer(4));
+
+		f.newSingleton("title-vs1")
+			.add(new Image("art/title-vs.png"))
+			.add(new Position(183,20))
+			.add(new Layer(4));
+
+		f.newSingleton("title-vs2")
+			.add(new Image("art/title-vs.png"))
+			.add(new Position(330,20))
+			.add(new Layer(4));
+
+		f.newSingleton("rules")
+			.add(new Image("art/instructions.png"))
+			.add(new Position(319,148))
+			.add(new Layer(5))
+			.add(new Rotation(-15));
+
+		var start = f.newSingleton("start")
+			.add(new Image("art/start.png"))
+			.add(new Position(321,265))
+			.add(new Layer(8))
+			.add(new Rotation(16));
+
+		f.newSingleton("counter-bg")
+			.add(new Image("art/score.png"))
+			.add(new Position(473,294))
+			.add(new Layer(5));
+
+		f.newSingleton("deathsign")
+			.add(new Image("art/youdied.png"))
+			.add(new Position(348,72))
+			.add(new Layer(6))
+			.add(new Rotation(34));
+
 		addCounter();
+
+		Config.offerStart(f);
 	}
 
 	public function addCounter()
 	{
 		f.newSingleton("score")
 			.add(new Image("art/font1.png"))
-			.add(Position.topRight().add(0,5))
-			.add(new Layer(5))
+			.add(new Position(538, 324))
+			.add(new Layer(3))
 			.add(new Text("0"))
-			.add(new Counter(0))
-			.add(TextStyle.createBitmap(false, Right, Top, 0, -2, 0, "2", false, "0123456789,"));
+			.add(new Counter(123467))
+			.add(Updated.instance)
+			.add(TextStyle.createBitmap(false, Center, Center, 0, -2, 0, "2", false, "0123456789,"));
 	}
 
 	public function spawnPlayer()
@@ -99,8 +158,30 @@ class PlayHandler extends FlaxenHandler
 
 	override public function update(_)
 	{
+		if(Config.mode == "start" && f.isPressed("start"))
+		{
+			Config.mode = "starting";
+			var scoreEnt = f.demandEntity("score");
+			scoreEnt.get(Counter).value = 0;
+			scoreEnt.add(Updated.instance);
+
+			var t = f.newTween(f.demandComponent("start", Position), { x:321, y:265 }, Config.UI_SPEED);
+			f.newTween(f.demandComponent("start", Rotation), { angle:16 }, Config.UI_SPEED);
+			f.newTween(f.demandComponent("deathsign", Position), { x:348, y:72 }, Config.UI_SPEED);
+			f.newTween(f.demandComponent("deathsign", Rotation), { angle:34 }, Config.UI_SPEED);
+			t.destroyEntity = false;
+			f.newActionQueue()
+				.waitForProperty(t, "complete", true)
+				.removeEntityByName(f.ash, t.name)
+				.addCallback(function() 
+				{ 
+					f.resetSingleton("BoxOfBeing"); // If playing second game
+					Config.mode = "play"; 
+					spawnPlayer();
+				});
+		}
+
 		var key = InputService.lastKey();
-		InputService.clearLastKey();
 
 		#if (debug)
 		if(key == Key.D)
@@ -114,6 +195,11 @@ class PlayHandler extends FlaxenHandler
 			#end
 		}
 		#end
+
+		InputService.clearLastKey();
+
+		if(!f.entityExists("player"))
+			return;
 
 		if(f.hasComponent("player", Stunned))
 			return;

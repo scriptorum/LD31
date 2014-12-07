@@ -1,5 +1,9 @@
 package game; 
 
+import flaxen.component.Position;
+import flaxen.component.Rotation;
+import flaxen.core.Flaxen;
+
 class Config
 {
 	// Shared Constants
@@ -17,9 +21,23 @@ class Config
 	public static var INIT_BEINGS:Int = 1;
 	public static var SPAWN_DELAY:Float = 1; // sec TODO scale spawn delay by number of spawns queued at once
 	public static var STUN_DURATION:Float = 0.75;
+	public static var UI_SPEED = 1.0;
 
 	// Shared Data 
 	public static var newBeingSpeed:Int = Config.START_BEING_SPEED; 
 	public static var currentScreen:Int = 0;
 	public static var posScreen:Array<flaxen.component.Position>;
+	public static var mode:String = "init";
+
+	// Shared Functions egads
+	public static function offerStart(f:Flaxen)
+	{
+		var t = f.newTween(f.getComponent("start", Position), { x:236, y:401 }, Config.UI_SPEED);
+		t.destroyEntity = false;
+		f.newTween(f.getComponent("start", Rotation), { angle:0 }, Config.UI_SPEED);
+		f.newActionQueue()
+			.waitForProperty(t, "complete", true)
+			.removeEntityByName(f.ash, t.name)
+			.addCallback(function() { Config.mode = "start"; });
+	}
 }

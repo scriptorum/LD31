@@ -35,6 +35,9 @@ class SpawnSystem extends FlaxenSystem
 
 	override public function update(t:Float)
 	{
+		if(Config.mode != "play")
+			return;
+			
 		for(node in f.ash.getNodeList(SpawnNode))
 		{
 			// If time expires, spawn another feller
