@@ -38,7 +38,7 @@ class PlayHandler extends FlaxenHandler
 			.add(Position.zero())
 			.add(new Layer(10));
 
-		Config.posScreen = [new Position(50, 60), new Position(50, 340), new Position(330,340)];
+		Config.posScreen = [new Position(20, 120), new Position(20, 370), new Position(320,370)];
 		var screenImage = new Image("art/screen.png");
 		var screenLayer = new Layer(100);
 

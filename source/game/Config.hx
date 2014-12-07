@@ -4,7 +4,7 @@ class Config
 {
 	// Shared Constants
 	public static var SCREEN_W:Int = 220;
-	public static var SCREEN_H:Int = 220;
+	public static var SCREEN_H:Int = 190;
 	public static var TILE_W:Int = 16;
 	public static var TILE_H:Int = 16;
 	public static var BOUNCE_MIN_X:Float = TILE_W / 2;
