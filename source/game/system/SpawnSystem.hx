@@ -1,3 +1,9 @@
+/**
+TODO:
+
+New spawns should travel in from a pile of game objects on the edge of the screen, or at least
+show a spawning animation.
+*/
 package game.system;
 
 import flaxen.core.Flaxen;
@@ -24,6 +30,7 @@ class SpawnSystem extends FlaxenSystem
 		arrScreen = [new Screen(0), new Screen(1), new Screen(2)];
 		layerBeing = new Layer(50);
 		offTile = new Offset(-Config.TILE_W / 2, -Config.TILE_H / 2);
+		var masterBeing = f.newSingleton("BoxOfBeing");
 	}
 
 	override public function update(t:Float)
@@ -74,6 +81,11 @@ class SpawnSystem extends FlaxenSystem
 		for(i in 0...Config.INIT_BEINGS)
 			f.newEntity("spawn")
 				.add(new Spawn(Config.SPAWN_DELAY, SpawnBeing));
+
+		// Reset score
+		var scoreEnt = f.demandEntity("score");
+		scoreEnt.get(Counter).value = 0;
+		scoreEnt.add(Updated.instance);
 	}
 
 	public function spawnBeing()
@@ -117,7 +129,7 @@ class SpawnSystem extends FlaxenSystem
 		// Spawn master being
 		var masterPos = new Position(px * sectW, py * sectH);
 		var masterPt = openfl.geom.Point.polar(Config.newBeingSpeed, Math.PI * Math.random());
-		var masterEnt:Entity = f.newEntity("master")
+		var masterEnt:Entity = f.newChildEntity("BoxOfBeing", "master")
 			.add(masterPos)
 			.add(new Velocity(masterPt.x, masterPt.y))
 			.add(Master.instance);

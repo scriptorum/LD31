@@ -5,6 +5,9 @@ package game.system;
 
 import ash.core.Entity;
 import flaxen.component.Position;
+import flaxen.component.Image;
+import flaxen.component.Layer;
+import flaxen.component.Text;
 import flaxen.component.Updated;
 import flaxen.core.Flaxen;
 import flaxen.core.FlaxenSystem;
@@ -26,7 +29,10 @@ class CollisionSystem extends FlaxenSystem
 
 	override public function update(_)
 	{
-		var playerPos = f.demandComponent("scr" + Config.currentScreen + "player", Position);
+		var playerPos = f.getComponent("scr" + Config.currentScreen + "player", Position);
+		if(playerPos == null)
+			return; // Player must be dead or having a cup of joe
+
 		for(node in f.ash.getNodeList(ColliderNode))
 		{
 			if(MathUtil.diff(node.position.x, playerPos.x) < Config.HITBOX &&
@@ -51,19 +57,13 @@ class CollisionSystem extends FlaxenSystem
 		trace("Player is stunned");
 	}
 
+	// TODO Add some explosion or devour animation
 	public function playerDevours(master:Entity)
 	{
 		// Find entity holding score && increment score counter
 		var scoreEnt = f.demandEntity("score");
 		scoreEnt.get(Counter).value++;
 		scoreEnt.add(Updated.instance);
-
-		// Add TextUpdaterSystem
-		// Find all children of this entity
-		// Mark all three children of this entity as dying, removing Being and Slave, removing master
-		// Change animation of three children to explode
-
-		// At end of explosion, remove or fade out remaining entity, removing it completely
 
 		// This should kill the master entity and its children
 		ash.removeEntity(master); 
@@ -74,8 +74,21 @@ class CollisionSystem extends FlaxenSystem
 				.add(new Spawn(Config.SPAWN_DELAY, SpawnBeing));			
 	}
 
+	// TODO Add a death animation
+	// TODO Move font2 into compomnent set, eliminate font1
 	public function playerDevoured()
 	{
-		trace("Player is killed!");
+		var msgEnt = f.newSingleton("youdied")
+			.add(new Image("art/font2.png"))
+			.add(Position.center())
+			.add(new Layer(5))
+			.add(new Text("YOU DIED!"))
+			.add(TextStyle.createBitmap(false, Center, Center, 0, -2, 0, "M", false, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ,.!"));
+		f.removeEntity("player");
+		f.newActionQueue()
+			.delay(3)
+			.addCallback(function(){ f.resetSingleton("BoxOfBeing"); })
+			.addEntity(ash, f.newEntity("spawn", false).add(new Spawn(0, SpawnPlayer)))
+			.removeEntity(ash, msgEnt);
 	}
 }

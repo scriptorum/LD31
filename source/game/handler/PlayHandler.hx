@@ -70,7 +70,7 @@ class PlayHandler extends FlaxenHandler
 			.add(new Image("art/font1.png"))
 			.add(Position.topRight().add(0,5))
 			.add(new Layer(5))
-			.add(new Text("9876543210,"))
+			.add(new Text("0"))
 			.add(new Counter(0))
 			.add(TextStyle.createBitmap(false, Right, Top, 0, -2, 0, "2", false, "0123456789,"));
 	}
