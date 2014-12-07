@@ -15,7 +15,7 @@ class Config
 	public static var PLAYER_SPEED:Int = 80;
 	public static var HITBOX:Int = 10;
 	public static var INIT_BEINGS:Int = 1;
-	public static var SPAWN_DELAY:Float = 0.25; // sec TODO scale spawn delay by number of spawns queued at once
+	public static var SPAWN_DELAY:Float = 1; // sec TODO scale spawn delay by number of spawns queued at once
 
 	// Shared Data 
 	public static var newBeingSpeed:Int = Config.START_BEING_SPEED; 

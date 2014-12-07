@@ -65,11 +65,8 @@ class CollisionSystem extends FlaxenSystem
 
 		// After fixed delay, spawn two new master beings
 		for(i in 0...2)
-		{
-			trace("Adding spawner, i=" + i);
 			f.newEntity("spawn")
 				.add(new Spawn(Config.SPAWN_DELAY, SpawnBeing));			
-		}
 	}
 
 	public function playerDevoured()

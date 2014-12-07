@@ -78,14 +78,44 @@ class SpawnSystem extends FlaxenSystem
 
 	public function spawnBeing()
 	{
-		// Randomize beings, but ensure at least one being is prey for the screen
-		// This will ensure the game is solvable (beatable is another matter)
-		var beings:Array<Being> = [Being.random(), Being.random(), Being.random()];
-		var b = Being.random();
-		beings[Being.typeToInt(b.getPredator())] = b;
+		var beings:Array<Being> = [];		
+		var availBeingTypes:Array<BeingType> = [Rock, Paper, Scissors];
+
+		// Randomize beings, but ensure exactly one prey is spawned and it is not on
+		// the player's current screen. This will ensure the game is solvable, and
+		// encourage the player to switch screen.
+		var curBeingType = Being.intToType(Config.currentScreen);
+		var curPreyType = Being.preyForType(curBeingType);
+		var curPredatorType = Being.predatorForType(curBeingType);
+		availBeingTypes.remove(curPreyType);
+		flaxen.util.ArrayUtil.shuffle(availBeingTypes);
+		var firstType = availBeingTypes.pop();
+		beings[Config.currentScreen] = new Being(firstType);
+		beings[Being.typeToInt(curPreyType)] = 
+			new Being((firstType == curBeingType) ? curPredatorType : curPreyType);
+		beings[Being.typeToInt(curPredatorType)] = 
+			new Being((firstType == curBeingType) ? curPreyType : curBeingType);
+
+		// Determine player location
+		var sectW = (Config.SCREEN_W / 5);
+		var sectH = (Config.SCREEN_H / 5);
+		var pos = f.demandComponent("player", Position);
+		var px = Std.int(pos.x / sectW);
+		var py = Std.int(pos.y / sectH);
+
+		// Remove sectors that contain or are next to the player
+		var sectors:Array<Int> = [ for(i in 0...25) i ];
+		for(gx in (px-1)...(px+2))
+			for(gy in (py-1)...(py+2))
+				sectors.remove(gy*5+gx);
+
+		// Pick spawn sector from remainder
+		var spawnSector:Int = sectors[cast Math.random() * sectors.length];
+		py = Std.int(spawnSector / 5);
+		px = Std.int(spawnSector - py * 5);
 
 		// Spawn master being
-		var masterPos = new Position(Config.SCREEN_W * Math.random(), Config.SCREEN_H * Math.random());
+		var masterPos = new Position(px * sectW, py * sectH);
 		var masterPt = openfl.geom.Point.polar(Config.newBeingSpeed, Math.PI * Math.random());
 		var masterEnt:Entity = f.newEntity("master")
 			.add(masterPos)

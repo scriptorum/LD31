@@ -13,12 +13,12 @@ class Being
 
 	public function getPrey() // return other being that this being preys on
 	{
-		return CYCLE[typeToInt(type) + 2];
+		return Being.preyForType(type);
 	}
 
 	public function getPredator() // return other being that preys on this being
 	{
-		return CYCLE[typeToInt(type) + 1];
+		return Being.predatorForType(type);
 	}
 
 	public function toString(): String
@@ -35,6 +35,16 @@ class Being
 	/**** STATIC ****/
 
 	public static var CYCLE:Array<BeingType> = [ Rock, Paper, Scissors, Rock, Paper ];
+
+	public static function preyForType(type:BeingType): BeingType
+	{
+		return CYCLE[typeToInt(type) + 2];
+	}
+
+	public static function predatorForType(type:BeingType): BeingType
+	{
+		return CYCLE[typeToInt(type) + 1];
+	}
 
 	public static function random(): Being
 	{
