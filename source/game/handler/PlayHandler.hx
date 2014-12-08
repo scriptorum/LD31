@@ -13,6 +13,7 @@ import flaxen.service.InputService;
 import game.component.*;
 import game.component.Spawn;
 import openfl.geom.Rectangle;
+import openfl.Assets;
 
 class PlayHandler extends FlaxenHandler
 {	
@@ -161,6 +162,7 @@ class PlayHandler extends FlaxenHandler
 	{
 		if(Config.mode == "start" && f.isPressed("start"))
 		{
+			f.newSound("sound/click.wav");
 			Config.mode = "starting";
 			var scoreEnt = f.demandEntity("score");
 			scoreEnt.get(Counter).value = 0;
@@ -240,6 +242,8 @@ class PlayHandler extends FlaxenHandler
 	{
 		if(screen == Config.currentScreen)
 			return;
+
+		f.newSound("sound/switch.wav");			
 
 		// Hide screen cover on new active screen, and show cover on old screen
 		var e = f.demandEntity("screen" + Config.currentScreen + "cover");

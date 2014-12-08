@@ -22,6 +22,7 @@ import game.component.Stunned;
 import game.node.ColliderNode;
 import game.type.BeingType;
 import game.type.SpawnType;
+import game.node.SpawnNode;
 
 class CollisionSystem extends FlaxenSystem
 {
@@ -59,6 +60,7 @@ class CollisionSystem extends FlaxenSystem
 	// TODO? All stunned objects (or just one encountered) are stunned as well, perhaps for even longer than the player is stunned
 	public function playerStunned()
 	{
+		f.newSound("sound/stun.wav");
 		var playerEnt = f.demandEntity("player");
 		playerEnt.add(new Stunned(Config.STUN_DURATION));
 		playerEnt.get(Velocity).set(0,0);
@@ -67,6 +69,13 @@ class CollisionSystem extends FlaxenSystem
 	// TODO Add some explosion or devour animation
 	public function playerDevours(master:Entity)
 	{
+		switch(Config.currentScreen)
+		{
+			case 0: f.newSound("sound/douse.wav");
+			case 1: f.newSound("sound/melt.wav");
+			case 2: f.newSound("sound/freeze.wav");
+		}
+
 		// Find entity holding score && increment score counter
 		var scoreEnt = f.demandEntity("score");
 		scoreEnt.get(Counter).value++;
@@ -76,7 +85,14 @@ class CollisionSystem extends FlaxenSystem
 		ash.removeEntity(master); 
 
 		// After fixed delay, spawn two new master beings
-		for(i in 0...2)
+		var count = f.countNodes(SpawnNode);
+		var toSpawn = 2;
+		if(count >= 3)
+			toSpawn = 0;
+		else if(count > 1)
+			toSpawn = 1;
+
+		for(i in 0...toSpawn)
 			f.newChildEntity("SpawnBox", "spawn")
 				.add(new Spawn(Config.SPAWN_DELAY, SpawnBeing));			
 	}
@@ -85,6 +101,8 @@ class CollisionSystem extends FlaxenSystem
 	// TODO Move font2 into compomnent set, eliminate font1
 	public function playerDevoured()
 	{
+		f.newSound("sound/die.wav");
+
 		Config.mode = "dead";		
 		f.resetSingleton("SpawnBox");
 		f.removeEntity("player");

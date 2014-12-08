@@ -64,6 +64,8 @@ class SpawnSystem extends FlaxenSystem
 
 	public function spawnPlayer()
 	{
+		f.newSound("sound/spawn.wav");
+
 		// Spawn master player
 		var playerEnt = f.newSingleton("player") // master player control
 			.add(new Position(Config.SCREEN_W / 2, Config.SCREEN_H / 2))
@@ -101,6 +103,8 @@ class SpawnSystem extends FlaxenSystem
 	{
 		if(!f.entityExists("player"))
 			return; // In case a SpawnBeing got stuck in the spawn queue
+
+		f.newSound("sound/spawn.wav");
 
 		var beings:Array<Being> = [];		
 		var availBeingTypes:Array<BeingType> = [Fireman, Fire, Snowman];
