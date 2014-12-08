@@ -68,6 +68,8 @@ class PlayHandler extends FlaxenHandler
 				e.add(Invisible.instance);
 		}
 
+		addCounter();
+
 		// art	TITLE		GAME 		LOGO
 		// FMan 46,196		10,20
 		// Fire 84,441		243,20
@@ -76,31 +78,75 @@ class PlayHandler extends FlaxenHandler
 		// V2 	258, 441	330,20
 
 
-		f.newSingleton("title-fireman")
+		addPlacards();
+		addTitling();
+	}
+
+	public function addTitling()
+	{
+		var fireman = f.newSingleton("title-fireman")
 			.add(new Image("art/title-fireman.png"))
-			.add(new Position(10,20))
+			.add(new Position(46,196))
+			.add(Invisible.instance)
 			.add(new Layer(4));
 
-		f.newSingleton("title-fire")
+		var fire = f.newSingleton("title-fire")
 			.add(new Image("art/title-fire.png"))
-			.add(new Position(235,20))
+			.add(new Position(84,441))
+			.add(Invisible.instance)
 			.add(new Layer(4));
 
-		f.newSingleton("title-snowman")
+		var snowman = f.newSingleton("title-snowman")
 			.add(new Image("art/title-snowman.png"))
-			.add(new Position(380,20))
+			.add(new Position(328,441))
+			.add(Invisible.instance)
 			.add(new Layer(4));
 
-		f.newSingleton("title-vs1")
+		var vs1 = f.newSingleton("title-vs1")
 			.add(new Image("art/title-vs.png"))
-			.add(new Position(183,20))
+			.add(new Position(110,318))
+			.add(Invisible.instance)
 			.add(new Layer(4));
 
-		f.newSingleton("title-vs2")
+		var vs2 = f.newSingleton("title-vs2")
 			.add(new Image("art/title-vs.png"))
-			.add(new Position(330,20))
-			.add(new Layer(4));
+			.add(Invisible.instance)
+			.add(new Position(258,441))
+			.add(new Layer(4));		
 
+		f.newActionQueue()
+			.delay(0.5)
+			.removeComponent(fireman, Invisible)
+			.addCallback(function() { f.newSound("sound/spawn.wav"); })
+			.delay(1.0)
+			.removeComponent(vs1, Invisible)
+			.addCallback(function() { f.newSound("sound/spawn.wav"); })
+			.delay(1.0)
+			.removeComponent(fire, Invisible)
+			.addCallback(function() { f.newSound("sound/spawn.wav"); })
+			.delay(1.0)
+			.removeComponent(vs2, Invisible)
+			.addCallback(function() { f.newSound("sound/spawn.wav"); })
+			.delay(1.5)
+			.removeComponent(snowman, Invisible)
+			.addCallback(function() { f.newSound("sound/spawn.wav"); })
+			.delay(2.3)
+			.addCallback(function()
+			{
+				f.newTween(fireman.get(Position), { x:10, y:20 }, 0.5);
+				f.newTween(vs1.get(Position),     { x:183,y:20 }, 0.5);
+				f.newTween(fire.get(Position),    { x:235,y:20 }, 0.5);
+				f.newTween(vs2.get(Position),     { x:330,y:20 }, 0.5);
+				f.newTween(snowman.get(Position), { x:380,y:20 }, 0.5);
+			})
+			.addCallback(function()
+			{
+				Config.offerStart(f);
+			});
+	}
+
+	public function addPlacards()
+	{
 		f.newSingleton("rules")
 			.add(new Image("art/instructions.png"))
 			.add(new Position(319,148))
@@ -123,10 +169,6 @@ class PlayHandler extends FlaxenHandler
 			.add(new Position(348,72))
 			.add(new Layer(6))
 			.add(new Rotation(34));
-
-		addCounter();
-
-		Config.offerStart(f);
 	}
 
 	public function addCounter()
