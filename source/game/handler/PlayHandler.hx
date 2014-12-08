@@ -115,7 +115,6 @@ class PlayHandler extends FlaxenHandler
 			.add(new Layer(4));		
 
 		f.newActionQueue()
-			.delay(0.5)
 			.removeComponent(fireman, Invisible)
 			.addCallback(function() { f.newSound("sound/spawn.wav"); })
 			.delay(1.0)
@@ -127,10 +126,10 @@ class PlayHandler extends FlaxenHandler
 			.delay(1.0)
 			.removeComponent(vs2, Invisible)
 			.addCallback(function() { f.newSound("sound/spawn.wav"); })
-			.delay(1.5)
+			.delay(1.0)
 			.removeComponent(snowman, Invisible)
 			.addCallback(function() { f.newSound("sound/spawn.wav"); })
-			.delay(2.3)
+			.delay(1.0)
 			.addCallback(function()
 			{
 				f.newTween(fireman.get(Position), { x:10, y:20 }, 0.5);
@@ -186,6 +185,7 @@ class PlayHandler extends FlaxenHandler
 	public function startGame()
 	{
 		Config.mode = "play"; 
+		f.resetSingleton("BoxOfBeing");
 		f.newChildEntity("SpawnBox", "spawn").add(new Spawn(0, SpawnPlayer));
 	}
 
