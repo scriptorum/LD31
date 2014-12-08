@@ -115,6 +115,7 @@ class PlayHandler extends FlaxenHandler
 			.add(new Layer(4));		
 
 		f.newActionQueue()
+			.delay(1.0)
 			.removeComponent(fireman, Invisible)
 			.addCallback(function() { f.newSound("sound/spawn.wav"); })
 			.delay(1.0)
