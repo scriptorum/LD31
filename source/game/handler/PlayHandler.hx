@@ -204,6 +204,7 @@ class PlayHandler extends FlaxenHandler
 	{
 		if(Config.mode == "start" && f.isPressed("start"))
 		{
+			f.stopSounds();
 			f.newSound("sound/click.wav");
 			Config.mode = "starting";
 			var scoreEnt = f.demandEntity("score");

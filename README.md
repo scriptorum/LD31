@@ -8,17 +8,14 @@ Entire Game On One Screen
 ##Overview
 Not a fan of the theme. I reject the mechanical interpretation, and instead tack on a few words to arrive at a different and more maleable theme: "Entire game on screen AT ONE TIME." The game will have multiple screens each mirroring the other with slight differences, but only one of the screens is active. Switch to a different screen when the going gets tough, but know that each screen has different entities and different dangers.
 
-###Known Issues, TO-DO List, Reminders
+###Description
+Have you wondered who would win in a fight of firemen vs fire vs snowmen? I that why you mind controlling them and forcing them to attack each other? You're kind of a jerk. Also, because you're a really big jerk you're mind controlling one of each at any given time. But justice will be served, because I saw the Matrix and apparently when you die in the mind of something else you die in real life and the blue pill and also reasons.
 
-* New art with an actual theme
-* Game Title
-* HUD UI
-* Sound effects
-* Music
-* Special effects
-* Additional gameplay tweaking - e.g., Waves 
-
-Well at least it's playable. :)
+###KNOWN ISSUES: 
+- Special effects and animations are absent. It's almost as if I ran out of time.
+- Mac build is freezing, working on that.
+- It ramps up hard pretty quicker than I'd like
+- Sound doesn't seem to preload properly.
 
 ##Credits
 * [Flaxen](https://github.com/Scriptorum/Flaxen)

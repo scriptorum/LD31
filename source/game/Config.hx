@@ -34,6 +34,7 @@ class Config
 	// Shared Functions egads
 	public static function offerStart(f:Flaxen)
 	{
+		f.newSound("sound/intro.wav", true);
 		var t = f.newTween(f.getComponent("start", Position), { x:236, y:401 }, Config.UI_SPEED);
 		t.destroyEntity = false;
 		f.newTween(f.getComponent("start", Rotation), { angle:0 }, Config.UI_SPEED);
