@@ -17,8 +17,11 @@ import game.type.*;
 class SpawnSystem extends FlaxenSystem
 {
 	private var imgTiles:Image;
+	private var imgPlayerTiles:Image;
 	private var gsTiles:ImageGrid;
+	private var pgsTiles:ImageGrid;
 	private var layerBeing:Layer;
+	private var poffTile:Offset;
 	private var offTile:Offset;
 	private var arrScreen:Array<Screen>;
 
@@ -26,10 +29,13 @@ class SpawnSystem extends FlaxenSystem
 	{
 		super(f);
 		imgTiles = new Image("art/tiles.png");
+		imgPlayerTiles = new Image("art/playerTiles.png");
 		gsTiles = new ImageGrid(Config.TILE_W, Config.TILE_H);
+		pgsTiles = new ImageGrid(Config.PLAYER_TILE_W, Config.PLAYER_TILE_H);
 		arrScreen = [new Screen(0), new Screen(1), new Screen(2)];
 		layerBeing = new Layer(50);
 		offTile = new Offset(-Config.TILE_W / 2, -Config.TILE_H / 2);
+		poffTile = new Offset(-Config.PLAYER_TILE_W / 2, -Config.PLAYER_TILE_H / 2);
 		var masterBeing = f.newSingleton("BoxOfBeing");
 	}
 
@@ -37,7 +43,7 @@ class SpawnSystem extends FlaxenSystem
 	{
 		if(Config.mode != "play")
 			return;
-			
+
 		for(node in f.ash.getNodeList(SpawnNode))
 		{
 			// If time expires, spawn another feller
@@ -69,20 +75,20 @@ class SpawnSystem extends FlaxenSystem
 		{
 			var pos = Config.posScreen[screen];
 			var slaveEnt:Entity = f.newChildSingleton(playerEnt, "scr" + screen + "player")
-				.add(imgTiles)
-				.add(gsTiles)
+				.add(imgPlayerTiles)
+				.add(pgsTiles)
 				.add(layerBeing)
-				.add(new Tile(screen + 3))
+				.add(new Tile(screen))
 				.add(new Position(Config.SCREEN_W / 2, Config.SCREEN_H / 2))
 				.add(new Velocity(0,0))
 				.add(new Slave("player", pos))
 				.add(arrScreen[screen])
-				.add(offTile);
+				.add(poffTile);
 		}
 
-		// Queue up some being spawns
+		// Spawn some beings, queue em up
 		for(i in 0...Config.INIT_BEINGS)
-			f.newEntity("spawn")
+			f.newChildEntity("SpawnBox", "spawn")
 				.add(new Spawn(Config.SPAWN_DELAY, SpawnBeing));
 
 		// Reset score
@@ -93,8 +99,11 @@ class SpawnSystem extends FlaxenSystem
 
 	public function spawnBeing()
 	{
+		if(!f.entityExists("player"))
+			return; // In case a SpawnBeing got stuck in the spawn queue
+
 		var beings:Array<Being> = [];		
-		var availBeingTypes:Array<BeingType> = [Rock, Paper, Scissors];
+		var availBeingTypes:Array<BeingType> = [Fireman, Fire, Snowman];
 
 		// Randomize beings, but ensure exactly one prey is spawned and it is not on
 		// the player's current screen. This will ensure the game is solvable, and

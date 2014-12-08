@@ -77,7 +77,7 @@ class CollisionSystem extends FlaxenSystem
 
 		// After fixed delay, spawn two new master beings
 		for(i in 0...2)
-			f.newEntity("spawn")
+			f.newChildEntity("SpawnBox", "spawn")
 				.add(new Spawn(Config.SPAWN_DELAY, SpawnBeing));			
 	}
 
@@ -86,6 +86,7 @@ class CollisionSystem extends FlaxenSystem
 	public function playerDevoured()
 	{
 		Config.mode = "dead";		
+		f.resetSingleton("SpawnBox");
 		f.removeEntity("player");
 
 		var t1 = f.newTween(f.getComponent("deathsign", Position), { x:143, y:340 }, Config.UI_SPEED);

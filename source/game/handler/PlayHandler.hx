@@ -32,6 +32,7 @@ class PlayHandler extends FlaxenHandler
 
 	public function initUI()
 	{
+		f.newSingleton("SpawnBox");
 
 		f.newSingleton("frame-overlay")
 			.add(new Image("art/overlay.png"))
@@ -81,7 +82,7 @@ class PlayHandler extends FlaxenHandler
 
 		f.newSingleton("title-fire")
 			.add(new Image("art/title-fire.png"))
-			.add(new Position(243,20))
+			.add(new Position(235,20))
 			.add(new Layer(4));
 
 		f.newSingleton("title-snowman")
@@ -134,15 +135,15 @@ class PlayHandler extends FlaxenHandler
 			.add(new Position(538, 324))
 			.add(new Layer(3))
 			.add(new Text("0"))
-			.add(new Counter(123467))
+			.add(new Counter(0))
 			.add(Updated.instance)
 			.add(TextStyle.createBitmap(false, Center, Center, 0, -2, 0, "2", false, "0123456789,"));
 	}
 
-	public function spawnPlayer()
+	public function startGame()
 	{
-		f.newEntity("spawn")
-			.add(new Spawn(0, SpawnPlayer));
+		Config.mode = "play"; 
+		f.newChildEntity("SpawnBox", "spawn").add(new Spawn(0, SpawnPlayer));
 	}
 
 	public function initSystems()
@@ -175,9 +176,7 @@ class PlayHandler extends FlaxenHandler
 				.removeEntityByName(f.ash, t.name)
 				.addCallback(function() 
 				{ 
-					f.resetSingleton("BoxOfBeing"); // If playing second game
-					Config.mode = "play"; 
-					spawnPlayer();
+					startGame();
 				});
 		}
 
