@@ -1,6 +1,7 @@
 #LD31
 
-Base code for Ludum Dare compo #31.  
+**Fireman vs Fire vs Snowman**
+Entry for Ludum Dare compo #31
 
 ##Theme
 Entire Game On One Screen
@@ -13,7 +14,6 @@ Have you wondered who would win in a fight of firemen vs fire vs snowmen? I that
 
 ###KNOWN ISSUES: 
 - Special effects and animations are absent. It's almost as if I ran out of time.
-- Mac build is freezing, working on that.
 - It ramps up hard pretty quicker than I'd like
 - Sound doesn't seem to preload properly.
 
